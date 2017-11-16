@@ -5,6 +5,9 @@ from datetime import datetime, timedelta, time
 from dateutil.parser import parse
 import re
 import logging
+import argparse
+from glob import glob
+from os import path
 
 logging.basicConfig(level='INFO', format='%(message)s')
 LOGGER = logging.getLogger("nutter")
@@ -84,20 +87,36 @@ def write_report(persons, csv_file_name):
     with open(csv_file_name, 'w') as f:
         writer = csv.DictWriter(f, fieldnames=["ID","NAME","TOTAL"])
         writer.writeheader()
-        LOGGER.info("ID  NAME            TOTAL")
+        LOGGER.debug(">\tID  NAME            TOTAL")
         for uid in sorted(persons.keys()):
             name = persons[uid].name
             wage = persons[uid].total_wage()
             writer.writerow({"ID":uid, "NAME":name, "TOTAL":wage})
-            LOGGER.info("{:<3d} {:15s} ${:.2f}".format(uid, name, wage))
-        LOGGER.info("\nWrote '{}'".format(csv_file_name))
+            LOGGER.debug(">\t{:<3d} {:15s} ${:.2f}".format(uid, name, wage))
 
 
 if __name__ == "__main__":
-    ifile = "recruitment-nut/HourList201403.csv"
+    parser = argparse.ArgumentParser(
+        description="An hourlist csv parser",
+        epilog="This is how we parse"
+    )
+    parser.add_argument("input",  type=str, help="input file or files")
+    parser.add_argument("output", type=str, help="output folder for report files")
+    parser.add_argument("-v", "--verbose", action="store_true")
 
-    timestamp = re.compile(r"\d+").search(ifile)[0]
-    ofile = "recruitment-nut/Report{}.csv".format(timestamp)
+    args = parser.parse_args()
+    if args.verbose:
+        LOGGER.setLevel('DEBUG')
 
-    persons = read_hourlist(ifile)
-    write_report(persons, ofile)
+    for ifile in glob(args.input):
+        LOGGER.info("="*50)
+        persons = read_hourlist(ifile)
+        LOGGER.info("Read  '{}'".format(ifile))
+
+        timestamp = re.compile(r"\d+").search(ifile)[0]
+        ofile = path.join(args.output, "Report{}.csv".format(timestamp))
+
+        persons = read_hourlist(ifile)
+        write_report(persons, ofile)
+        LOGGER.info("Wrote '{}'".format(ofile))
+        LOGGER.info("="*50)

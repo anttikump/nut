@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/warbaque/nut.svg?branch=master)](https://travis-ci.org/warbaque/master)
+[![Build Status](https://travis-ci.org/warbaque/nut.svg?branch=master)](https://travis-ci.org/warbaque/nut)
 
 Nut
 ===
@@ -18,7 +18,7 @@ Requires `dateutil`
 
     git clone https://github.com/warbaque/nut
     cd nut
-    ./nut --help
+    ./nut.py --help
 
 
 Use Examples

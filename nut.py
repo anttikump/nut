@@ -100,7 +100,7 @@ if __name__ == "__main__":
         description="An hourlist csv parser",
         epilog="This is how we parse"
     )
-    parser.add_argument("input",  type=str, help="input file or files")
+    parser.add_argument("input",  nargs="+", type=str, help="input file or files")
     parser.add_argument("output", type=str, help="output folder for report files")
     parser.add_argument("-v", "--verbose", action="store_true")
 
@@ -108,7 +108,9 @@ if __name__ == "__main__":
     if args.verbose:
         LOGGER.setLevel('DEBUG')
 
-    for ifile in glob(args.input):
+    def flatten(l): return (item for sublist in l for item in sublist)
+
+    for ifile in flatten(glob(item) for item in args.input):
         LOGGER.info("="*50)
         persons = read_hourlist(ifile)
         LOGGER.info("Read  '{}'".format(ifile))
@@ -116,7 +118,6 @@ if __name__ == "__main__":
         timestamp = re.compile(r"\d+").search(ifile)[0]
         ofile = path.join(args.output, "Report{}.csv".format(timestamp))
 
-        persons = read_hourlist(ifile)
         write_report(persons, ofile)
         LOGGER.info("Wrote '{}'".format(ofile))
         LOGGER.info("="*50)

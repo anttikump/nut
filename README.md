@@ -44,7 +44,7 @@ Use Examples
     Wrote 'recruitment-nut/Report201404.csv'
     ==================================================
 
-**Print more verbose output:**
+**Print verbose output:**
 
     ❯ ./nut.py "recruitment-nut/HourList201403.csv" "recruitment-nut" -v
     ==================================================
